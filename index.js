@@ -15,7 +15,10 @@ const mongo = process.env.MONGO_url;
 const productSchema = mongoose.Schema({
   name: String,
   image: String,
-  countInStock: Number,
+  countInStock: {
+    type: Number,
+    required: true,
+  },
 });
 
 const Product = mongoose.model("Product", productSchema);
@@ -42,6 +45,12 @@ app.post(`${api}/products`, (req, res) => {
         success: false,
       });
     });
+});
+
+app.get(`${api}/products`, async (req, res) => {
+  const products = await Product.find();
+
+  return res.send(products);
 });
 
 main()
