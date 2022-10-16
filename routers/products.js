@@ -66,7 +66,11 @@ router.post(`/`, async (req, res) => {
 });
 
 router.get(`/`, async (req, res) => {
-  const products = await Product.find().populate("category");
+  let filter = {};
+  if (req.query.categories) {
+    filter = { categories: req.query.category.split(",") };
+  }
+  const products = await Product.find(filter).populate("category");
 
   if (!products) {
     return res.status(500).json({
