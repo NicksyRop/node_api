@@ -1,27 +1,38 @@
 const express = require("express");
+const Category = require("../models/Category");
 
 const router = express.Router();
 
 const Product = require("../models/Product");
 
-router.post(`/`, (req, res) => {
-  const product = new Product({
-    name: req.body.name,
-    image: req.body.image,
-    countInStock: req.body.countInStock,
-  });
+router.post(`/`, async (req, res) => {
+  const category = await Category.findById(req.body.category);
 
-  product
-    .save()
-    .then((createdProduct) => {
-      return res.status(201).json(createdProduct);
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        error: err,
-        success: false,
-      });
+  if (!category) {
+    return res.status(400).send("Invalid category");
+  } else {
+    var product = new Product({
+      name: req.body.name,
+      description: req.body.description,
+      richDescription: req.body.richDescription,
+      image: req.body.image,
+      brand: req.body.brand,
+      price: req.body.price,
+      category: req.body.category,
+      countInStock: req.body.countInStock,
+      rating: req.body.countInStock,
+      numRevies: req.body.numRevies,
+      isFeatured: req.body.isFeatured,
     });
+
+    product = await product.save();
+
+    if (!product) {
+      return res.status(500).json("Product cannot be create");
+    } else {
+      return res.status(201).json(product);
+    }
+  }
 });
 
 router.get(`/`, async (req, res) => {
