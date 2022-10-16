@@ -1,4 +1,5 @@
 const express = require("express");
+const { findById } = require("../models/Category");
 
 const router = express.Router();
 
@@ -14,6 +15,20 @@ router.get(`/`, async (req, res) => {
   } else {
     return res.status(200).json(categories);
   }
+});
+
+router.get("/:id", (req, res) => {
+  Category.findById(req.params.id)
+    .then((category) => {
+      if (category) {
+        return res.status(200).json(category);
+      } else {
+        return res.status(404).json("category not found");
+      }
+    })
+    .catch((err) => {
+      return res.status(400).json({ error: err });
+    });
 });
 
 router.post(`/`, async (req, res) => {
