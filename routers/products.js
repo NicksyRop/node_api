@@ -5,6 +5,36 @@ const router = express.Router();
 
 const Product = require("../models/Product");
 
+const mongoose = require("mongoose");
+router.put("/:id", async (req, res) => {
+  const category = await Category.findById(req.body.category);
+
+  if (!category) return res.status(400).send("Invalid category");
+  const product = await Product.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      description: req.body.description,
+      richDescription: req.body.richDescription,
+      image: req.body.image,
+      brand: req.body.brand,
+      price: req.body.price,
+      category: req.body.category,
+      countInStock: req.body.countInStock,
+      rating: req.body.countInStock,
+      numRevies: req.body.numRevies,
+      isFeatured: req.body.isFeatured,
+    },
+    { new: true }
+  );
+
+  if (!product) {
+    return res.status(404).json("product cannot be updated");
+  } else {
+    return res.status(201).json(product);
+  }
+});
+
 router.post(`/`, async (req, res) => {
   const category = await Category.findById(req.body.category);
 
@@ -54,6 +84,23 @@ router.get("/:id", async (req, res) => {
     return res.status(404).json("Product not found");
   } else {
     return res.status(200).json(product);
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  if (mongoose.isValidObjectId(req.body.id)) {
+    return res.status(404).json("Invalid id");
+  }
+
+  const product = await Product.findByIdAndDelete(req.params.id);
+
+  if (!product) {
+    return res.status(404).json("Product not found");
+  } else {
+    return res.status(200).json({
+      success: true,
+      message: "Product deleted",
+    });
   }
 });
 
