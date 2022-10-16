@@ -64,4 +64,22 @@ router.delete("/:id", (req, res) => {
     });
 });
 
+router.put("/:id", async (req, res) => {
+  const category = await Category.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      icon: req.body.icon,
+      color: req.body.color,
+    },
+    { new: true }
+  );
+
+  if (!category) {
+    return res.status(404).json("category cannot be created");
+  } else {
+    return res.status(201).json(category);
+  }
+});
+
 module.exports = router;
