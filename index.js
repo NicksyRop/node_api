@@ -3,55 +3,29 @@ const app = express();
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-
-//middleware
-app.use(bodyParser.json());
-app.use(morgan("tiny"));
-
+const Product = require("./models/Product");
 require("dotenv").config();
 const api = process.env.API_URL;
 const mongo = process.env.MONGO_url;
+var cors = require("cors");
 
-const productSchema = mongoose.Schema({
-  name: String,
-  image: String,
-  countInStock: {
-    type: Number,
-    required: true,
-  },
-});
+const productRouter = require("./routers/products");
+const categoriesRouter = require("./routers/categories");
+const ordersRouter = require("./routers/orders");
+const usersRouter = require("./routers/users");
 
-const Product = mongoose.model("Product", productSchema);
+//middleware
+app.use(cors());
+app.options("*", cors());
+app.use(bodyParser.json());
+app.use(morgan("tiny"));
 
-app.get(api, (req, res) => {
-  res.send("Hello Api");
-});
+//routers
 
-app.post(`${api}/products`, (req, res) => {
-  const product = new Product({
-    name: req.body.name,
-    image: req.body.image,
-    countInStock: req.body.countInStock,
-  });
-
-  product
-    .save()
-    .then((createdProduct) => {
-      res.status(201).json(createdProduct);
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-        success: false,
-      });
-    });
-});
-
-app.get(`${api}/products`, async (req, res) => {
-  const products = await Product.find();
-
-  return res.send(products);
-});
+app.use(`${api}/products`, productRouter);
+app.use(`${api}/categories`, categoriesRouter);
+app.use(`${api}/orders`, ordersRouter);
+app.use(`${api}/users`, usersRouter);
 
 main()
   .then((res) => console.log("Database connected"))
