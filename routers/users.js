@@ -6,12 +6,22 @@ const User = require("../models/User");
 var bcrypt = require("bcryptjs");
 
 router.get("/", async (req, res) => {
-  const users = await User.find();
+  const users = await User.find().select("-passwordHash");
 
   if (!users) {
     return res.status(500).json({ success: false });
   } else {
     return res.status(200).json(users);
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  const user = await User.findById(req.params.id).select("-passwordHash");
+
+  if (!user) {
+    return res.status(500).json({ success: false });
+  } else {
+    return res.status(200).json(user);
   }
 });
 
