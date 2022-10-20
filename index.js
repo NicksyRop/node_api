@@ -8,17 +8,24 @@ require("dotenv").config();
 const api = process.env.API_URL;
 const mongo = process.env.MONGO_url;
 var cors = require("cors");
-
 const productRouter = require("./routers/products");
 const categoriesRouter = require("./routers/categories");
 const ordersRouter = require("./routers/orders");
 const usersRouter = require("./routers/users");
+var { expressjwt: jwt } = require("express-jwt");
 
 //middleware
 app.use(cors());
 app.options("*", cors());
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
+
+app.use(
+  jwt({
+    secret: process.env.secret,
+    algorithms: ["HS256"],
+  }).unless({ path: ["/api/v1/users/login"] })
+);
 
 //routers
 
