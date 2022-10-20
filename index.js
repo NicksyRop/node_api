@@ -21,14 +21,17 @@ app.use(bodyParser.json());
 app.use(morgan("tiny"));
 
 //isRevokedCallback
+
 const isRevokedCallback = async (req, payload) => {
-  const isAdmin = await payload.isAdmin;
+  const isAdmin = payload.payload.isAdmin;
+
+  console.log(isAdmin);
+
   if (isAdmin) {
-    console.log("Admin");
     return false;
+  } else {
+    return true;
   }
-  console.log("Not Admin");
-  return true;
 };
 
 //expressJwt to protect routes
