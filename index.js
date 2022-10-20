@@ -20,11 +20,23 @@ app.options("*", cors());
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 
+//isRevokedCallback
+const isRevokedCallback = async (req, payload) => {
+  const isAdmin = await payload.isAdmin;
+  if (isAdmin) {
+    console.log("Admin");
+    return false;
+  }
+  console.log("Not Admin");
+  return true;
+};
+
 //expressJwt to protect routes
 app.use(
   jwt({
     secret: process.env.secret,
     algorithms: ["HS256"],
+    isRevoked: isRevokedCallback,
   }).unless({
     path: [
       "/api/v1/users/login",
@@ -36,6 +48,7 @@ app.use(
 
 //error handling
 app.use(function (err, req, res, next) {
+  console.log(err);
   if (err.name === "UnauthorizedError") {
     res.status(401).json({ message: "invalid token..." });
   } else {

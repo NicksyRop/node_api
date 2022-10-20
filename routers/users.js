@@ -58,9 +58,13 @@ router.post("/login", async (req, res) => {
   }
 
   if (user && bcrypt.compareSync(req.body.password, user.passwordHash)) {
-    var token = jwt.sign({ userId: user.id }, process.env.secret, {
-      expiresIn: "1d",
-    });
+    var token = jwt.sign(
+      { userId: user.id, isAdmin: user.isAdmin },
+      process.env.secret,
+      {
+        expiresIn: "1d",
+      }
+    );
 
     return res.status(200).send({ user: user.email, token: token });
   } else {
