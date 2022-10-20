@@ -20,12 +20,22 @@ app.options("*", cors());
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 
+//expressJwt to protect routes
 app.use(
   jwt({
     secret: process.env.secret,
     algorithms: ["HS256"],
   }).unless({ path: ["/api/v1/users/login"] })
 );
+
+//error handling
+app.use(function (err, req, res, next) {
+  if (err.name === "UnauthorizedError") {
+    res.status(401).json({ message: "invalid token..." });
+  } else {
+    next(err);
+  }
+});
 
 //routers
 
