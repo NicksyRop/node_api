@@ -25,7 +25,13 @@ app.use(
   jwt({
     secret: process.env.secret,
     algorithms: ["HS256"],
-  }).unless({ path: ["/api/v1/users/login"] })
+  }).unless({
+    path: [
+      "/api/v1/users/login",
+      "/api/v1/users/register",
+      { url: /\/api\/v1\/products(.*)/, methods: ["GET", "OPTIONS"] },
+    ],
+  })
 );
 
 //error handling
