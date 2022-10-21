@@ -6,6 +6,7 @@ const router = express.Router();
 const Product = require("../models/Product");
 
 const mongoose = require("mongoose");
+const Order = require("../models/Order");
 router.put("/:id", async (req, res) => {
   const category = await Category.findById(req.body.category);
 

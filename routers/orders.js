@@ -78,4 +78,21 @@ router.post("/", async (req, res) => {
   }
 });
 
+//update
+router.put("/:id", async (req, res) => {
+  const order = await Order.findByIdAndUpdate(
+    req.params.id,
+    {
+      status: req.body.status,
+    },
+    { new: true }
+  );
+
+  if (!order) {
+    return res.status(404).json("order cannot be updated");
+  } else {
+    return res.status(201).json(order);
+  }
+});
+
 module.exports = router;
