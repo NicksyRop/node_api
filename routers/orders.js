@@ -95,4 +95,19 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+//update
+router.delete("/:id", async (req, res) => {
+  const order = await Order.findByIdAndDelete(req.params.id);
+
+  if (!order) {
+    return res
+      .status(404)
+      .json({ success: false, message: "order cannot be deleted" });
+  } else {
+    order.orderItems.map((orderItem) => {
+      OrderItem.findByIdAndDelete(orderItem);
+    });
+    return res.status(201).json(order);
+  }
+});
 module.exports = router;
