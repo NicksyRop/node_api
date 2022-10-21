@@ -42,6 +42,7 @@ app.use(
     isRevoked: isRevokedCallback,
   }).unless({
     path: [
+      "/",
       "/api/v1/users/login",
       "/api/v1/users/register",
       { url: /\/api\/v1\/products(.*)/, methods: ["GET", "OPTIONS"] },
@@ -74,6 +75,10 @@ main()
 async function main() {
   await mongoose.connect(mongo);
 }
+
+app.get("/", (req, res) => {
+  return res.send("Welcome to e-shop REST API");
+});
 
 app.listen(3000, () => {
   console.log(`serevr running on http://localhost:3000`);

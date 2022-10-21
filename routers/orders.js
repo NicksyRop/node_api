@@ -110,4 +110,8 @@ router.delete("/:id", async (req, res) => {
     return res.status(201).json(order);
   }
 });
+
+//get user order
+
+router.get("/get/user-orders/:user", (req, res) => {});
 module.exports = router;

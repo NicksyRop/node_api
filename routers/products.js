@@ -5,10 +5,40 @@ const router = express.Router();
 
 const Product = require("../models/Product");
 
+const FILE_TYPES_MEME = {
+  "image/jpg": "jpg",
+  "image/png": "png",
+  "image/jpeg": "jpeg",
+};
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const isValid = FILE_TYPES_MEME[file.mimetype];
+    let uploadError = new Error("inavlid image type");
+
+    if (isValid) {
+      uploadError = null;
+    }
+    cb(uploadError, "/public/uploads");
+  },
+  filename: function (req, file, cb) {
+    const filename = file.filename.replace(" ", "-");
+    const extension = FILE_TYPES_MEME[file.mimetype];
+    cb(null, `${filename}-${Date.now()}.${extension}`);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 const mongoose = require("mongoose");
 const Order = require("../models/Order");
-router.put("/:id", async (req, res) => {
+
+router.put("/:id", upload.single("image"), async (req, res) => {
   const category = await Category.findById(req.body.category);
+
+  const fileName = req.file.filename;
+  const basePath = `${req.protocol}://${req.get("host")}/public/uploads`;
 
   if (!category) return res.status(400).send("Invalid category");
   const product = await Product.findByIdAndUpdate(
@@ -17,7 +47,7 @@ router.put("/:id", async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       richDescription: req.body.richDescription,
-      image: req.body.image,
+      image: `${basePath}${fileName}`,
       brand: req.body.brand,
       price: req.body.price,
       category: req.body.category,
@@ -37,6 +67,7 @@ router.put("/:id", async (req, res) => {
 });
 
 router.post(`/`, async (req, res) => {
+  console.log(await req.body);
   const category = await Category.findById(req.body.category);
 
   if (!category) {
