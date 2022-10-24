@@ -6,6 +6,14 @@ node {
 
     }
 
+    stage('npm install'){
+        nodejs(nodeJsInstallationName : 'nodejs'){
+            sh 'npm install'
+        }
+
+    }
+
+
     stage('build/deploy'){
 
         def app = docker.build("nicksyrop/node_jenkins:latest" , '.')
